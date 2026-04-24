@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PulseOps — AI-Powered Front Office for Healthcare Practices</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B1220;--navy2:#111927;--navy3:#162032;--navy4:#1C2A3F;--navy5:#243147;
+  --gold:#C8A84B;--gold2:#D4B86A;--gold-dim:rgba(200,168,75,0.12);--gold-border:rgba(200,168,75,0.28);
+  --green:#10B981;--green-dim:rgba(16,185,129,0.1);--green-border:rgba(16,185,129,0.25);
+  --white:#FFFFFF;--off:#F1F5F9;--g1:#E2E8F0;--g2:#94A3B8;--g3:#64748B;--g4:#334155;
+  --amber:#F59E0B;--red:#EF4444;
+  --font-display:'Playfair Display',serif;--font-body:'DM Sans',sans-serif;
+  --r:8px;--r2:14px;--r3:20px;--r4:28px
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--navy);color:var(--white);font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 5%;height:68px;display:flex;align-items:center;justify-content:space-between;background:rgba(11,18,32,0.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo{width:34px;height:34px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--navy);flex-shrink:0}
+.nav-name{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--white)}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-link{font-size:14px;color:var(--g2);text-decoration:none;transition:color .15s}
+.nav-link:hover{color:var(--white)}
+.nav-cta{background:var(--gold);color:var(--navy);border:none;border-radius:var(--r);padding:9px 20px;font-size:14px;font-weight:500;font-family:var(--font-body);cursor:pointer;transition:all .15s;text-decoration:none;display:inline-block}
+.nav-cta:hover{background:var(--gold2);transform:translateY(-1px)}
+.nav-hipaa{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--g3);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:100px;padding:3px 10px}
+.nav-hipaa-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 5% 80px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(200,168,75,0.1) 0%,transparent 70%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 80%)}
+.hero-content{position:relative;z-index:1;max-width:840px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:500;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;margin-bottom:28px}
+.hero-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:var(--font-display);font-size:clamp(36px,5.5vw,62px);font-weight:400;line-height:1.1;color:var(--white);margin-bottom:24px;letter-spacing:-.5px}
+h1 em{color:var(--gold);font-style:normal}
+h1 .italic{font-style:italic;color:var(--g2);font-size:.88em;display:block}
+.hero-sub{font-size:clamp(15px,2vw,18px);color:var(--g2);max-width:600px;margin:0 auto 40px;line-height:1.75}
+.hero-cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:56px}
+.btn-hero{padding:15px 32px;font-size:15px;font-weight:500;border-radius:var(--r);font-family:var(--font-body);cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.btn-hero-primary{background:var(--gold);color:var(--navy)}
+.btn-hero-primary:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 12px 32px rgba(200,168,75,0.3)}
+.btn-hero-ghost{background:rgba(255,255,255,0.06);color:var(--g1);border:1px solid rgba(255,255,255,0.12)}
+.btn-hero-ghost:hover{background:rgba(255,255,255,0.1);transform:translateY(-1px)}
+.hero-proof{display:flex;gap:0;justify-content:center;flex-wrap:wrap;border:1px solid rgba(255,255,255,0.07);border-radius:var(--r2);background:rgba(255,255,255,0.03);overflow:hidden;max-width:720px;margin:0 auto}
+.proof-item{flex:1;min-width:140px;padding:18px 20px;text-align:center;border-right:1px solid rgba(255,255,255,0.07)}
+.proof-item:last-child{border-right:none}
+.proof-num{font-family:var(--font-display);font-size:27px;color:var(--white);font-weight:400;line-height:1}
+.proof-num span{color:var(--gold)}
+.proof-label{font-size:11px;color:var(--g3);margin-top:4px;line-height:1.4}
+.section{padding:96px 5%}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-eyebrow{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.section-title{font-family:var(--font-display);font-size:clamp(26px,3.8vw,42px);font-weight:400;color:var(--white);line-height:1.15;margin-bottom:16px}
+.section-sub{font-size:16px;color:var(--g2);max-width:580px;line-height:1.7;margin-bottom:48px}
+.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.problem-card{background:var(--navy3);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r2);padding:24px;position:relative;overflow:hidden;transition:border-color .2s}
+.problem-card:hover{border-color:rgba(200,168,75,0.25)}
+.problem-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+.problem-icon{font-size:22px;margin-bottom:12px}
+.problem-title{font-size:15px;font-weight:500;color:var(--white);margin-bottom:7px}
+.problem-desc{font-size:13px;color:var(--g2);line-height:1.7}
+.problem-cost{display:inline-flex;align-items:center;gap:5px;margin-top:12px;font-size:12px;font-weight:500;color:var(--red);background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:100px;padding:3px 10px}
+.how-wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+.how-steps{display:flex;flex-direction:column;gap:0}
+.how-step{display:flex;gap:18px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:all .15s}
+.how-step:last-child{border-bottom:none}
+.how-step.active .how-step-num{background:var(--gold);color:var(--navy)}
+.how-step.active .how-step-title{color:var(--white)}
+.how-step-num{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--g3);flex-shrink:0;transition:all .2s;margin-top:2px}
+.how-step-body{flex:1}
+.how-step-title{font-size:15px;font-weight:500;color:var(--g2);margin-bottom:4px;transition:color .2s}
+.how-step-desc{font-size:13px;color:var(--g3);line-height:1.6;display:none}
+.how-step.active .how-step-desc{display:block;color:var(--g2)}
+.how-visual{position:sticky;top:88px}
+.how-screen{background:var(--navy3);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r3);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.5)}
+.how-screen-bar{background:rgba(0,0,0,0.3);height:36px;display:flex;align-items:center;padding:0 16px;gap:6px}
+.how-screen-dot{width:9px;height:9px;border-radius:50%}
+.how-screen-title{font-size:11px;color:var(--g3);margin-left:8px;font-weight:500}
+.how-screen-body{padding:20px}
+.screen-panel{display:none}
+.screen-panel.active{display:block;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.mini-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:12px}
+.mini-row:last-child{border-bottom:none}
+.mini-label{color:var(--g2)}
+.mini-val{color:var(--white);font-weight:500}
+.mini-val.gold{color:var(--gold)}
+.mini-val.green{color:var(--green)}
+.mini-val.red{color:var(--red)}
+.mini-val.amber{color:var(--amber)}
+.mini-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:500}
+.mini-badge.gold{background:var(--gold-dim);color:var(--gold)}
+.mini-badge.green{background:rgba(16,185,129,0.12);color:var(--green)}
+.mini-badge.amber{background:rgba(245,158,11,0.12);color:var(--amber)}
+.mini-badge.red{background:rgba(239,68,68,0.12);color:var(--red)}
+.mini-badge.purple{background:rgba(139,92,246,0.12);color:#A78BFA}
+.mini-cat-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:100px;border:1px solid}
+.tag-urgent{background:rgba(239,68,68,0.1);color:var(--red);border-color:rgba(239,68,68,0.25)}
+.tag-nurse{background:rgba(139,92,246,0.1);color:#A78BFA;border-color:rgba(139,92,246,0.25)}
+.tag-book{background:var(--gold-dim);color:var(--gold);border-color:var(--gold-border)}
+.mini-section-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--g3);margin-bottom:8px}
+.mini-note{font-size:10px;color:var(--gold);margin-top:8px}
+.mini-ecw-box{background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-radius:6px;padding:8px 10px;margin-top:10px}
+.mini-ecw-label{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--green);margin-bottom:4px}
+.mini-ecw-text{font-size:10px;color:var(--g2);line-height:1.5;font-family:monospace}
+.features-section{background:var(--navy2);padding:96px 5%}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.feat-card{background:var(--navy3);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r2);padding:24px;transition:all .2s}
+.feat-card:hover{border-color:rgba(200,168,75,0.22);transform:translateY(-2px)}
+.feat-icon-wrap{width:42px;height:42px;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:14px}
+.feat-title{font-size:15px;font-weight:500;color:var(--white);margin-bottom:7px}
+.feat-desc{font-size:13px;color:var(--g2);line-height:1.7}
+.feat-tag{display:inline-flex;align-items:center;gap:4px;margin-top:10px;font-size:11px;border-radius:100px;padding:2px 9px;font-weight:500}
+.feat-tag.now{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border)}
+.feat-tag.soon{background:rgba(255,255,255,0.05);color:var(--g3);border:1px solid rgba(255,255,255,0.1)}
+.roles-tabs{display:flex;gap:8px;margin-bottom:32px;flex-wrap:wrap}
+.role-tab{padding:8px 18px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,0.1);color:var(--g2);background:transparent;font-family:var(--font-body);transition:all .15s}
+.role-tab.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.role-tab:hover:not(.active){border-color:rgba(255,255,255,0.2);color:var(--white)}
+.role-panel{display:none;animation:fadeUp .25s ease}
+.role-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.role-gets{background:var(--navy3);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r2);padding:22px}
+.role-gets-title{font-size:11px;font-weight:500;color:var(--g3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.role-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;color:var(--g2);line-height:1.5;align-items:flex-start}
+.role-item:last-child{border-bottom:none}
+.role-check{color:var(--gold);flex-shrink:0;margin-top:2px;font-size:12px}
+.role-no-more{background:var(--navy3);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r2);padding:22px}
+.no-more-item{display:flex;gap:10px;padding:7px 0;font-size:13px;color:var(--g3);align-items:flex-start;border-bottom:1px solid rgba(255,255,255,0.04)}
+.no-more-item:last-child{border-bottom:none}
+.no-more-x{color:var(--red);flex-shrink:0;font-size:12px;margin-top:2px}
+.compliance-section{background:var(--navy2);padding:96px 5%}
+.compliance-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:40px}
+.comp-card{background:var(--navy3);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r2);padding:22px}
+.comp-card.featured{border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.04)}
+.comp-title{font-size:14px;font-weight:500;color:var(--white);margin-bottom:4px}
+.comp-desc{font-size:12px;color:var(--g2);line-height:1.6;margin-bottom:14px}
+.comp-item{display:flex;gap:8px;font-size:12px;color:var(--g2);padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center}
+.comp-item:last-child{border-bottom:none}
+.comp-check{color:var(--green);flex-shrink:0;font-size:11px}
+.baa-banner{grid-column:1/-1;background:var(--navy4);border:1px solid rgba(16,185,129,0.25);border-radius:var(--r2);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.baa-left{font-size:14px;color:var(--g2);line-height:1.6}
+.baa-left strong{color:var(--white)}
+.baa-badge{background:var(--green);color:var(--white);border-radius:var(--r);padding:9px 18px;font-size:12px;font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tiers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.tier-card{background:var(--navy3);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r2);padding:26px;transition:border-color .2s;position:relative;display:flex;flex-direction:column}
+.tier-card:hover{border-color:rgba(255,255,255,0.14)}
+.tier-card.featured{border-color:var(--gold);background:rgba(200,168,75,0.04)}
+.tier-ribbon{background:var(--gold);color:var(--navy);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:100px;display:inline-block;margin-bottom:12px}
+.tier-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--g3);margin-bottom:5px}
+.tier-name{font-family:var(--font-display);font-size:22px;color:var(--white);font-weight:400;margin-bottom:8px}
+.tier-desc{font-size:13px;color:var(--g2);line-height:1.6;margin-bottom:18px}
+.tier-feat{font-size:13px;color:var(--g2);padding:5px 0;display:flex;gap:8px;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,0.04)}
+.tier-feat:last-of-type{border-bottom:none}
+.tier-feat::before{content:'✓';color:var(--gold);font-weight:600;flex-shrink:0;font-size:12px;margin-top:2px}
+.tier-spacer{flex:1;min-height:16px}
+.tier-cta{width:100%;margin-top:20px;padding:12px;background:var(--gold);color:var(--navy);border:none;border-radius:var(--r);font-size:14px;font-weight:500;font-family:var(--font-body);cursor:pointer;transition:all .15s}
+.tier-cta:hover{background:var(--gold2)}
+.tier-cta.ghost{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:var(--g1)}
+.tier-cta.ghost:hover{background:rgba(255,255,255,0.1)}
+.tier-note{background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:var(--r);padding:11px 14px;margin-top:12px;font-size:12px;color:var(--g2);line-height:1.6}
+.tier-note strong{color:var(--gold)}
+.gate-section{padding:96px 5%;background:linear-gradient(180deg,var(--navy) 0%,var(--navy2) 100%)}
+.gate-wrap{max-width:920px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.gate-left .section-title{font-size:clamp(24px,3.2vw,36px);margin-bottom:14px}
+.gate-left p{font-size:15px;color:var(--g2);line-height:1.7;margin-bottom:20px}
+.expect-item{display:flex;gap:10px;padding:7px 0;font-size:14px;color:var(--g2);border-bottom:1px solid rgba(255,255,255,0.05)}
+.expect-item:last-child{border-bottom:none}
+.expect-check{color:var(--gold);flex-shrink:0;font-weight:600}
+.gate-form-wrap{background:var(--navy3);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r3);padding:30px}
+.gate-form-title{font-family:var(--font-display);font-size:21px;color:var(--white);font-weight:400;margin-bottom:5px}
+.gate-form-sub{font-size:13px;color:var(--g2);margin-bottom:22px;line-height:1.6}
+.form-tabs{display:flex;gap:8px;margin-bottom:20px}
+.form-tab{flex:1;padding:8px;text-align:center;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,0.1);color:var(--g2);background:transparent;font-family:var(--font-body);transition:all .15s}
+.form-tab.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:500;color:var(--g2);margin-bottom:5px;letter-spacing:.03em}
+.form-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r);padding:10px 13px;font-size:14px;color:var(--white);font-family:var(--font-body);outline:none;transition:border-color .15s}
+.form-input:focus{border-color:var(--gold)}
+.form-input::placeholder{color:var(--g3)}
+.form-select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r);padding:10px 13px;font-size:14px;color:var(--white);font-family:var(--font-body);outline:none;appearance:none;cursor:pointer}
+.form-select option{background:var(--navy3);color:var(--white)}
+.form-submit{width:100%;padding:13px;background:var(--gold);color:var(--navy);border:none;border-radius:var(--r);font-size:15px;font-weight:500;font-family:var(--font-body);cursor:pointer;transition:all .2s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.form-submit:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(200,168,75,0.3)}
+.form-privacy{font-size:11px;color:var(--g3);text-align:center;margin-top:9px;line-height:1.5}
+.form-success{display:none;text-align:center}
+.form-success-icon{font-size:36px;margin-bottom:10px}
+.form-success-title{font-family:var(--font-display);font-size:22px;color:var(--white);margin-bottom:8px}
+.form-success-sub{font-size:13px;color:var(--g2);line-height:1.6;margin-bottom:16px}
+.powered-bar{background:var(--navy2);border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 5%;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.powered-text{font-size:12px;color:var(--g3)}
+.powered-brand{display:flex;align-items:center;gap:8px;text-decoration:none;transition:opacity .15s}
+.powered-brand:hover{opacity:.8}
+.powered-logo{width:22px;height:22px;background:var(--gold);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--navy)}
+.powered-name{font-size:13px;font-weight:500;color:var(--white)}
+.powered-name span{color:var(--gold)}
+footer{background:var(--navy2);border-top:1px solid rgba(255,255,255,0.06);padding:60px 5% 32px}
+.footer-inner{max-width:1100px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.footer-logo{width:30px;height:30px;background:var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy)}
+.footer-brand-name{font-family:var(--font-display);font-size:17px;color:var(--white)}
+.footer-brand-desc{font-size:13px;color:var(--g3);line-height:1.6}
+.footer-links-title{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--g3);margin-bottom:14px}
+.footer-link{display:block;font-size:13px;color:var(--g2);text-decoration:none;margin-bottom:9px;transition:color .15s}
+.footer-link:hover{color:var(--white)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.footer-copy{font-size:12px;color:var(--g3)}
+.footer-powered{font-size:12px;color:var(--g3)}
+.footer-powered a{color:var(--gold);text-decoration:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy4);border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:10px 20px;font-size:13px;color:var(--white);display:flex;align-items:center;gap:8px;transition:transform .3s ease;z-index:999;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+</style>
+</head>
+<body>
+<nav>
+  <a href="#" class="nav-brand"><div class="nav-logo">PO</div><span class="nav-name">PulseOps</span></a>
+  <div class="nav-links">
+    <a href="#how" class="nav-link">How It Works</a>
+    <a href="#features" class="nav-link">Features</a>
+    <a href="#tiers" class="nav-link">Plans</a>
+    <a href="#privacy" class="nav-link">Privacy</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="nav-hipaa"><span class="nav-hipaa-dot"></span>HIPAA-compliant</div>
+    <a href="#demo" class="nav-cta">Watch the AI agent</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div><div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>Built for healthcare practices</div>
+    <h1>Every patient call is a<br><em>revenue opportunity.</em><span class="italic">Most practices miss it.</span></h1>
+    <p class="hero-sub">PulseOps answers every inbound call, identifies the intent, routes it to the right person, and delivers a structured note ready for your clinical management system. No missed calls. No round-robin routing. No burnout.</p>
+    <div class="hero-cta-row">
+      <a href="#demo" class="btn-hero btn-hero-primary">Watch the AI agent</a>
+      <a href="#demo" class="btn-hero btn-hero-ghost">Book a discovery call</a>
+    </div>
+    <div class="hero-proof">
+      <div class="proof-item"><div class="proof-num"><span>70</span>+</div><div class="proof-label">Calls handled daily<br>per practice</div></div>
+      <div class="proof-item"><div class="proof-num"><span>40</span>%</div><div class="proof-label">Reduction in front desk<br>call handling load</div></div>
+      <div class="proof-item"><div class="proof-num"><span>1</span></div><div class="proof-label">System entry per call,<br>down from 3 to 5</div></div>
+      <div class="proof-item"><div class="proof-num"><span>0</span></div><div class="proof-label">Calls missed or<br>sent to voicemail</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="problem">
+  <div class="section-inner">
+    <div class="section-eyebrow">The Problem</div>
+    <h2 class="section-title">Your front office is the most<br>overloaded part of your practice.</h2>
+    <p class="section-sub">High call volume. Manual message routing. Missed callbacks. Staff burnout. And the inefficiency compounds every time you grow.</p>
+    <div class="problem-grid">
+      <div class="problem-card"><div class="problem-icon">📞</div><div class="problem-title">Calls go to voicemail</div><div class="problem-desc">During busy clinic hours and lunch, calls pile up. Patients get frustrated, call back repeatedly, or move to another practice. Each missed call is a missed appointment and missed revenue.</div><div class="problem-cost">Revenue walks out the door</div></div>
+      <div class="problem-card"><div class="problem-icon">🔄</div><div class="problem-title">Round-robin message routing</div><div class="problem-desc">A call comes in, someone logs it, someone else re-routes it, a third person takes action. Three to five touchpoints for a single patient request. That time is wasted coordination, not care.</div><div class="problem-cost">3 to 5 staff touchpoints per call</div></div>
+      <div class="problem-card"><div class="problem-icon">📋</div><div class="problem-title">Repetitive manual data entry</div><div class="problem-desc">Every call generates a manual message that gets created, routed, re-routed, then finally actioned inside your clinical system. Staff spend hours daily on coordination work instead of patient-facing tasks.</div><div class="problem-cost">5 to 6 hours per day on call admin</div></div>
+      <div class="problem-card"><div class="problem-icon">⚠️</div><div class="problem-title">Referral gaps at the door</div><div class="problem-desc">HMO patients arrive without valid referrals. The practice scrambles to resolve it on the day of the visit. Multiple patients per day arrive with this problem, creating delays, rework, and revenue risk.</div><div class="problem-cost">Preventable day-of disruptions</div></div>
+      <div class="problem-card"><div class="problem-icon">💸</div><div class="problem-title">Hiring does not fix the process</div><div class="problem-desc">Adding staff to a broken workflow means more people doing the same manual work at greater scale. The problem is the process, not the headcount. A new hire inherits the same inefficiencies on day one.</div><div class="problem-cost">Cost without operational change</div></div>
+      <div class="problem-card"><div class="problem-icon">🔥</div><div class="problem-title">Staff turnover compounds it</div><div class="problem-desc">Front desk turnover in healthcare runs high annually. Every time someone leaves, institutional knowledge walks out. Training new staff on a broken workflow makes things worse before they get better.</div><div class="problem-cost">30 to 40% annual turnover industry-wide</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how" style="background:var(--navy2)">
+  <div class="section-inner">
+    <div class="section-eyebrow">How It Works</div>
+    <h2 class="section-title">AI handles the intake.<br>Your team handles the action.</h2>
+    <p class="section-sub">PulseOps sits before your clinical management system, capturing every call, categorizing the intent, and routing a clean structured note to the right person. One system entry. Done.</p>
+    <div class="how-wrap">
+      <div class="how-steps">
+        <div class="how-step active" onclick="setHowStep(0)">
+          <div class="how-step-num">1</div>
+          <div class="how-step-body">
+            <div class="how-step-title">Patient calls and AI answers immediately</div>
+            <div class="how-step-desc">Every inbound call is answered in real time. No voicemail, no hold music, no missed opportunity. New patients are identified and routed to the front desk for personal intake. Existing patients are handled by the AI agent, which introduces itself clearly and captures their intent.</div>
+          </div>
+        </div>
+        <div class="how-step" onclick="setHowStep(1)">
+          <div class="how-step-num">2</div>
+          <div class="how-step-body">
+            <div class="how-step-title">Intent captured and call categorized</div>
+            <div class="how-step-desc">The AI identifies the reason for the call and assigns one of six categories: urgent return call, clinical staff transfer, appointment booking, prescription refill, lab results inquiry, or general inquiry. Categorization happens during the call, before it ends. No staff interpretation needed.</div>
+          </div>
+        </div>
+        <div class="how-step" onclick="setHowStep(2)">
+          <div class="how-step-num">3</div>
+          <div class="how-step-body">
+            <div class="how-step-title">HMO referral flag raised if needed</div>
+            <div class="how-step-desc">If the patient's insurance type indicates an HMO, PulseOps flags the appointment for referral verification before the visit. Minimal data used — just patient name and insurance type from a simple list you provide. No clinical records accessed. Gaps resolved before patients arrive.</div>
+          </div>
+        </div>
+        <div class="how-step" onclick="setHowStep(3)">
+          <div class="how-step-num">4</div>
+          <div class="how-step-body">
+            <div class="how-step-title">Right staff member notified directly</div>
+            <div class="how-step-desc">The correct staff member receives one structured SMS or email with patient name, date of birth, callback number, reason for call, and a pre-written system note ready to paste. No round robin. No re-routing. One message, one person, one action.</div>
+          </div>
+        </div>
+        <div class="how-step" onclick="setHowStep(4)">
+          <div class="how-step-num">5</div>
+          <div class="how-step-body">
+            <div class="how-step-title">One system entry and it is done</div>
+            <div class="how-step-desc">The staff member opens your clinical management system once, pastes the pre-written note, and takes the action. No message creation, no routing chain, no coordination overhead. Three to five manual touchpoints compressed into one. Your team works in the same system they always have, with far less volume landing on their desk.</div>
+          </div>
+        </div>
+      </div>
+      <div class="how-visual">
+        <div class="how-screen">
+          <div class="how-screen-bar">
+            <div class="how-screen-dot" style="background:#FF5F57"></div>
+            <div class="how-screen-dot" style="background:#FEBC2E"></div>
+            <div class="how-screen-dot" style="background:#28C840"></div>
+            <div class="how-screen-title" id="how-screen-title">AI Answers</div>
+          </div>
+          <div class="how-screen-body">
+            <div class="screen-panel active" id="sp-0">
+              <div class="mini-section-label">Incoming call — 9:14 AM</div>
+              <div class="mini-row"><span class="mini-label">Caller</span><span class="mini-val">Sample Patient</span></div>
+              <div class="mini-row"><span class="mini-label">Patient status</span><span class="mini-badge gold">Existing patient</span></div>
+              <div class="mini-row"><span class="mini-label">AI response</span><span class="mini-val gold">Answered — 0 rings</span></div>
+              <div class="mini-row"><span class="mini-label">Insurance type</span><span class="mini-val amber">HMO detected</span></div>
+              <div class="mini-row"><span class="mini-label">Call status</span><span class="mini-badge green">In progress</span></div>
+              <div class="mini-note">New patients routed to front desk. Existing patients handled by AI.</div>
+            </div>
+            <div class="screen-panel" id="sp-1">
+              <div class="mini-section-label">Call categorization</div>
+              <div class="mini-row"><span class="mini-label">Reason detected</span><span class="mini-val">Clinical question</span></div>
+              <div class="mini-row"><span class="mini-label">Category assigned</span><span class="mini-cat-tag tag-nurse">Clinical staff transfer</span></div>
+              <div class="mini-row"><span class="mini-label">Assigned to</span><span class="mini-val gold">Medical Assistant</span></div>
+              <div class="mini-row"><span class="mini-label">Urgent flag</span><span class="mini-badge green">Not urgent</span></div>
+              <div class="mini-row"><span class="mini-label">HMO flag</span><span class="mini-badge amber">Referral check needed</span></div>
+            </div>
+            <div class="screen-panel" id="sp-2">
+              <div class="mini-section-label">Referral flag — HMO patient</div>
+              <div class="mini-row"><span class="mini-label">Insurance type</span><span class="mini-val amber">HMO detected</span></div>
+              <div class="mini-row"><span class="mini-label">Flag raised</span><span class="mini-val">Referral verification needed</span></div>
+              <div class="mini-row"><span class="mini-label">Data used</span><span class="mini-val gold">Name and insurance type only</span></div>
+              <div class="mini-row"><span class="mini-label">Clinical records accessed</span><span class="mini-val green">None</span></div>
+              <div class="mini-row"><span class="mini-label">Office manager notified</span><span class="mini-badge gold">Alert sent</span></div>
+            </div>
+            <div class="screen-panel" id="sp-3">
+              <div class="mini-section-label">SMS sent to Medical Assistant</div>
+              <div style="background:rgba(200,168,75,0.08);border:1px solid rgba(200,168,75,0.28);border-radius:6px;padding:10px;font-size:11px;color:var(--g2);line-height:1.6;margin-bottom:10px">CLINICAL REVIEW — Patient, DOB on file. New concern reported. HMO detected, referral check recommended. Callback: (555) 000-0100.</div>
+              <div class="mini-row"><span class="mini-label">Delivery</span><span class="mini-badge green">Sent — 9:17 AM</span></div>
+              <div class="mini-row"><span class="mini-label">Routing steps</span><span class="mini-val gold">1 — direct</span></div>
+              <div class="mini-row"><span class="mini-label">Previous routing steps</span><span class="mini-val red">3 to 5 — manual</span></div>
+            </div>
+            <div class="screen-panel" id="sp-4">
+              <div class="mini-section-label">Clinical system note — ready to paste</div>
+              <div class="mini-ecw-box"><div class="mini-ecw-label">Structured note</div><div class="mini-ecw-text">CLINICAL REFERRAL — Patient, DOB on file. Concern reported. HMO detected — verify referral prior to visit. Known allergy noted. Callback: (555) 000-0100.</div></div>
+              <div class="mini-row" style="margin-top:8px"><span class="mini-label">System entries required</span><span class="mini-val gold">1</span></div>
+              <div class="mini-row"><span class="mini-label">Staff actions</span><span class="mini-val gold">Paste, act, done</span></div>
+              <div class="mini-row"><span class="mini-label">Workflow change</span><span class="mini-val green">None — same system</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features-section" id="features">
+  <div class="section-inner">
+    <div class="section-eyebrow">Platform Capabilities</div>
+    <h2 class="section-title">Everything your front office needs.<br>Nothing it does not.</h2>
+    <p class="section-sub">Built specifically for the daily rhythm of a medical practice. Not a generic AI tool retrofitted for healthcare.</p>
+    <div class="features-grid">
+      <div class="feat-card"><div class="feat-icon-wrap">📞</div><div class="feat-title">24/7 call answering</div><div class="feat-desc">Every call answered in real time during clinic hours, lunch, busy periods, and after hours. No voicemail. No missed opportunity. Unlimited calls included.</div><span class="feat-tag now">Available now</span></div>
+      <div class="feat-card"><div class="feat-icon-wrap">⊞</div><div class="feat-title">Smart message categorization</div><div class="feat-desc">Six categories assigned automatically during the call: urgent return call, clinical staff transfer, appointment booking, prescription refill, lab results inquiry, and general inquiry.</div><span class="feat-tag now">Available now</span></div>
+      <div class="feat-card"><div class="feat-icon-wrap">→</div><div class="feat-title">Direct staff routing</div><div class="feat-desc">Each category routes to one designated person. No round robin, no re-routing. The right person gets one structured message with everything they need to act immediately.</div><span class="feat-tag now">Available now</span></div>
+      <div class="feat-card"><div class="feat-icon-wrap">🏥</div><div class="feat-title">New vs. existing patient split</div><div class="feat-desc">New patients are identified and transferred to your front desk for personal intake. Existing patients are handled by AI, freeing your team to focus on the relationships that matter most.</div><span class="feat-tag now">Available now</span></div>
+      <div class="feat-card"><div class="feat-icon-wrap">⚠️</div><div class="feat-title">HMO referral flag</div><div class="feat-desc">When a caller's insurance type suggests HMO coverage, PulseOps flags the appointment for referral verification. No clinical records accessed. Gaps resolved before patients arrive.</div><span class="feat-tag now">Available now</span></div>
+      <div class="feat-card"><div class="feat-icon-wrap">📄</div><div class="feat-title">Pre-written system note</div><div class="feat-desc">Every call summary includes a structured note ready to paste into your clinical management system. One entry per call, by one person. Three to five manual touchpoints reduced to a single action.</div><span class="feat-tag now">Available now</span></div>
+      <div class="feat-card"><div class="feat-icon-wrap">📠</div><div class="feat-title">Fax intake routing</div><div class="feat-desc">AI reads and categorizes incoming faxes including referrals, records, orders, and insurance documents, then routes each one to the correct staff member without anyone monitoring the inbox.</div><span class="feat-tag soon">Coming soon</span></div>
+      <div class="feat-card"><div class="feat-icon-wrap">💳</div><div class="feat-title">Billing follow-up automation</div><div class="feat-desc">Automated billing reminders and follow-up workflows reduce the manual effort your team spends chasing outstanding balances every day and every week.</div><span class="feat-tag soon">Coming soon</span></div>
+      <div class="feat-card"><div class="feat-icon-wrap">📊</div><div class="feat-title">Practice dashboard</div><div class="feat-desc">Leadership sees every call, every routing decision, and every system handoff in one view. Multi-physician visibility available when you are ready to scale across the group.</div><span class="feat-tag soon">Coming soon</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="roles">
+  <div class="section-inner">
+    <div class="section-eyebrow">Who It's For</div>
+    <h2 class="section-title">Built for the whole team.<br>Not just the physician.</h2>
+    <p class="section-sub">The physician decides to pilot it. The office manager runs oversight. The scheduler and medical assistant are the daily users. PulseOps is designed to earn buy-in from all of them.</p>
+    <div class="roles-tabs">
+      <button class="role-tab active" onclick="setRole('physician')">Physician</button>
+      <button class="role-tab" onclick="setRole('manager')">Office Manager</button>
+      <button class="role-tab" onclick="setRole('scheduler')">Scheduler</button>
+      <button class="role-tab" onclick="setRole('ma')">Medical Assistant</button>
+    </div>
+    <div class="role-panel active" id="role-physician">
+      <div class="role-gets">
+        <div class="role-gets-title">What the physician gets</div>
+        <div class="role-item"><span class="role-check">✓</span>Urgent callbacks flagged and routed immediately with no delay</div>
+        <div class="role-item"><span class="role-check">✓</span>Prescription refill requests arrive with full medication and pharmacy details, ready for one approval action</div>
+        <div class="role-item"><span class="role-check">✓</span>Practice running smoothly while you focus on patient care</div>
+        <div class="role-item"><span class="role-check">✓</span>HIPAA liability sits with PulseOps, not your practice</div>
+        <div class="role-item"><span class="role-check">✓</span>Scale to partner physicians without additional setup cost</div>
+      </div>
+      <div class="role-no-more">
+        <div class="role-gets-title" style="color:var(--red)">No more</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Urgent patient calls buried in voicemail</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Staff interrupting you to route a simple refill request</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Hiring another front desk person every time patient volume grows</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Discovering a referral was not checked until the patient arrived</div>
+      </div>
+    </div>
+    <div class="role-panel" id="role-manager">
+      <div class="role-gets">
+        <div class="role-gets-title">What the office manager gets</div>
+        <div class="role-item"><span class="role-check">✓</span>Every escalation copied to you with full visibility and no need to be on every call</div>
+        <div class="role-item"><span class="role-check">✓</span>HMO referral alerts before patients arrive, with no day-of scrambles</div>
+        <div class="role-item"><span class="role-check">✓</span>Daily call summary covering every call, routing decision, and system handoff</div>
+        <div class="role-item"><span class="role-check">✓</span>HIPAA compliance managed by PulseOps with BAA in place and liability protected</div>
+        <div class="role-item"><span class="role-check">✓</span>Team workload reduced without changing how anyone works in the clinical system</div>
+      </div>
+      <div class="role-no-more">
+        <div class="role-gets-title" style="color:var(--red)">No more</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Manually watching the fax inbox for referral documents</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Inconsistent message routing across staff members</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>The same message passing through multiple hands before anyone acts</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Uncertainty about data exposure — the BAA defines and protects the practice</div>
+      </div>
+    </div>
+    <div class="role-panel" id="role-scheduler">
+      <div class="role-gets">
+        <div class="role-gets-title">What the scheduler gets</div>
+        <div class="role-item"><span class="role-check">✓</span>New patients routed directly to your desk with name, date of birth, insurance, and appointment preference already captured</div>
+        <div class="role-item"><span class="role-check">✓</span>Appointment requests arrive structured with slot preference, reason, and callback number included</div>
+        <div class="role-item"><span class="role-check">✓</span>One SMS per call — open the system, paste the note, schedule and done</div>
+        <div class="role-item"><span class="role-check">✓</span>No more answering the same general inquiry call repeatedly throughout the day</div>
+        <div class="role-item"><span class="role-check">✓</span>Work in your existing clinical system exactly as you do now with nothing to relearn</div>
+      </div>
+      <div class="role-no-more">
+        <div class="role-gets-title" style="color:var(--red)">No more</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Answering high call volumes while simultaneously managing the front desk</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Manually creating messages and routing them across multiple people</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Playing phone tag on appointment requests that could have been captured on the first call</div>
+      </div>
+    </div>
+    <div class="role-panel" id="role-ma">
+      <div class="role-gets">
+        <div class="role-gets-title">What the medical assistant gets</div>
+        <div class="role-item"><span class="role-check">✓</span>Clinical calls routed directly to you with full context already included</div>
+        <div class="role-item"><span class="role-check">✓</span>Patient name, date of birth, reason, and callback included in every message</div>
+        <div class="role-item"><span class="role-check">✓</span>Known allergies flagged in the summary so no cross-referencing is needed before calling back</div>
+        <div class="role-item"><span class="role-check">✓</span>One system entry per patient with a pre-written note ready to paste</div>
+        <div class="role-item"><span class="role-check">✓</span>HMO referral flag visible before the patient's visit date</div>
+      </div>
+      <div class="role-no-more">
+        <div class="role-gets-title" style="color:var(--red)">No more</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Receiving incomplete hand-offs with missing patient information</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Manually creating system messages after listening to a voicemail</div>
+        <div class="no-more-item"><span class="no-more-x">✕</span>Discovering an HMO referral gap when the patient is already in the waiting room</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="compliance-section" id="privacy">
+  <div class="section-inner">
+    <div class="section-eyebrow">Privacy &amp; Compliance</div>
+    <h2 class="section-title">HIPAA-compliant by design.<br>Liability stays with us.</h2>
+    <p class="section-sub">Your practice deserves clarity on exactly what we collect, how we store it, and where responsibility sits if something goes wrong. Here it is in plain language.</p>
+    <div class="compliance-grid">
+      <div class="baa-banner">
+        <div class="baa-left"><strong>Business Associate Agreement — Active.</strong> PulseOps is legally designated as a Business Associate under HIPAA §164.308. Responsibility for how patient call data is handled within this platform rests with PulseOps, not your practice. In the event of a data breach caused by our systems, financial liability and HHS notification obligations rest with us.</div>
+        <div class="baa-badge"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1l5 2V7c0 3-2.5 5-5 6C4.5 12 2 10 2 7V3l5-2z" fill="white"/></svg>BAA Signed &amp; Active</div>
+      </div>
+      <div class="comp-card featured">
+        <div class="comp-title">What we collect</div>
+        <div class="comp-desc">Per call only. Nothing beyond what is needed to route the message.</div>
+        <div class="comp-item"><span class="comp-check">✓</span>Caller name and date of birth</div>
+        <div class="comp-item"><span class="comp-check">✓</span>Callback phone number</div>
+        <div class="comp-item"><span class="comp-check">✓</span>Call intent and assigned category</div>
+        <div class="comp-item"><span class="comp-check">✓</span>Insurance type for HMO flag — no ID number</div>
+        <div class="comp-item" style="color:var(--red)"><span style="color:var(--red)">✕</span>Full call recordings — never retained</div>
+        <div class="comp-item" style="color:var(--red)"><span style="color:var(--red)">✕</span>SSN, insurance ID, or clinical data — never collected</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-title">How data is stored</div>
+        <div class="comp-desc">Encrypted at rest and in transit. Accessible only by authorized practice staff.</div>
+        <div class="comp-item"><span class="comp-check">✓</span>AES-256 encryption at rest</div>
+        <div class="comp-item"><span class="comp-check">✓</span>TLS 1.3 encryption in transit</div>
+        <div class="comp-item"><span class="comp-check">✓</span>Role-based access — practice staff only</div>
+        <div class="comp-item"><span class="comp-check">✓</span>6-year retention per HIPAA requirements</div>
+        <div class="comp-item"><span class="comp-check">✓</span>Data purged on contract exit</div>
+        <div class="comp-item"><span class="comp-check">✓</span>Never used to train AI models</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-title">If something goes wrong</div>
+        <div class="comp-desc">PulseOps bears responsibility — not the practice.</div>
+        <div class="comp-item"><span class="comp-check">✓</span>PulseOps notifies HHS — not the physician</div>
+        <div class="comp-item"><span class="comp-check">✓</span>Financial liability stays with PulseOps</div>
+        <div class="comp-item"><span class="comp-check">✓</span>PulseOps coordinates patient notification</div>
+        <div class="comp-item"><span class="comp-check">✓</span>Full audit log always available to practice</div>
+        <div class="comp-item"><span class="comp-check">✓</span>Practice exposure: minimal to none</div>
+        <div class="comp-item"><span class="comp-check">✓</span>No PHI needed for HMO referral flagging</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="tiers" style="background:var(--navy2)">
+  <div class="section-inner">
+    <div class="section-eyebrow">Plans</div>
+    <h2 class="section-title">Start with one practice.<br>Scale to the whole group.</h2>
+    <p class="section-sub">Infrastructure is built once and shared across partner physicians. Each physician that joins runs on the same foundation with their own staff routing and call log.</p>
+    <div class="tiers-grid">
+      <div class="tier-card">
+        <div class="tier-label">Tier 1</div>
+        <div class="tier-name">Pilot</div>
+        <div class="tier-desc">Start with one physician. Prove the model. Expand when your team is comfortable and results are clear.</div>
+        <div class="tier-feat">24/7 AI call answering — unlimited calls</div>
+        <div class="tier-feat">6-category message classification</div>
+        <div class="tier-feat">Direct staff routing via SMS or email</div>
+        <div class="tier-feat">New vs. existing patient split</div>
+        <div class="tier-feat">HMO referral flag</div>
+        <div class="tier-feat">Pre-written note per call for system entry</div>
+        <div class="tier-feat">Integration with your core clinical system</div>
+        <div class="tier-spacer"></div>
+        <div class="tier-note">Usage scales with call volume. Transition to a flat monthly rate once you have a clear picture of your needs.</div>
+        <button class="tier-cta ghost" onclick="scrollToDemo()">Start pilot</button>
+      </div>
+      <div class="tier-card featured">
+        <div class="tier-ribbon">Recommended</div>
+        <div class="tier-label">Tier 2</div>
+        <div class="tier-name">Predictable Monthly</div>
+        <div class="tier-desc">Fixed monthly investment. Higher call volume included. No variability to manage month to month.</div>
+        <div class="tier-feat">Everything in Pilot</div>
+        <div class="tier-feat">Higher base call volume included</div>
+        <div class="tier-feat">Fax intake routing</div>
+        <div class="tier-feat">Message and referral workflow automation</div>
+        <div class="tier-feat">Daily summary report for practice leadership</div>
+        <div class="tier-feat">Multi-physician dashboard when partners join</div>
+        <div class="tier-feat">Priority support and ongoing workflow tuning</div>
+        <div class="tier-spacer"></div>
+        <div class="tier-note"><strong>One flat investment per physician.</strong> Structured to be meaningfully less than the cost of a dedicated admin hire.</div>
+        <button class="tier-cta" onclick="scrollToDemo()">Book a call</button>
+      </div>
+      <div class="tier-card">
+        <div class="tier-label">Tier 3</div>
+        <div class="tier-name">Full Practice Deployment</div>
+        <div class="tier-desc">All partner physicians on the same platform with full workflow automation across the group.</div>
+        <div class="tier-feat">Everything in Predictable Monthly</div>
+        <div class="tier-feat">All partner physicians onboarded</div>
+        <div class="tier-feat">Billing follow-up automation</div>
+        <div class="tier-feat">Referral expiration tracking and alerts</div>
+        <div class="tier-feat">Outbound courtesy reminders to patients</div>
+        <div class="tier-feat">Deep integration with core clinical system</div>
+        <div class="tier-feat">Dedicated implementation support</div>
+        <div class="tier-spacer"></div>
+        <div class="tier-note"><strong>Infrastructure built during the pilot serves the whole group.</strong> Partner physicians that join later do not repeat the setup process.</div>
+        <button class="tier-cta ghost" onclick="scrollToDemo()">Get in touch</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="gate-section" id="demo">
+  <div class="gate-wrap">
+    <div class="gate-left">
+      <div class="section-eyebrow">Get Started</div>
+      <h2 class="section-title">Hear PulseOps handle a real patient call.</h2>
+      <p>We will walk you through a short session — hear the AI agent in action, see the full routing flow from call to system note, and understand exactly what changes and what stays the same for your team.</p>
+      <div style="margin-top:20px">
+        <div class="expect-item"><span class="expect-check">✓</span>Hear the AI agent handle a patient call live</div>
+        <div class="expect-item"><span class="expect-check">✓</span>See the full routing flow from call to system note</div>
+        <div class="expect-item"><span class="expect-check">✓</span>Understand the BAA and how your practice is protected</div>
+        <div class="expect-item"><span class="expect-check">✓</span>Get a workflow mapped to your specific staff and categories</div>
+        <div class="expect-item"><span class="expect-check">✓</span>No commitment required to see the demo</div>
+      </div>
+    </div>
+    <div>
+      <div class="gate-form-wrap">
+        <div class="gate-form-title">Request the AI agent recording</div>
+        <div class="gate-form-sub">Or book a live discovery call to walk through it with your team.</div>
+        <div class="form-tabs">
+          <button class="form-tab active" onclick="setFormTab(this,'demo')">Watch demo</button>
+          <button class="form-tab" onclick="setFormTab(this,'call')">Book a call</button>
+        </div>
+        <div id="form-main">
+          <div class="form-group"><label class="form-label">Your name</label><input class="form-input" id="f-name" placeholder="Your name" type="text"></div>
+          <div class="form-group"><label class="form-label">Work email</label><input class="form-input" id="f-email" placeholder="you@yourclinic.com" type="email"></div>
+          <div class="form-group"><label class="form-label">Practice or clinic name</label><input class="form-input" id="f-practice" placeholder="Your practice name" type="text"></div>
+          <div class="form-group">
+            <label class="form-label">Approximate daily call volume</label>
+            <select class="form-select" id="f-volume">
+              <option value="">Select range</option>
+              <option>Under 30 calls per day</option>
+              <option>30 to 70 calls per day</option>
+              <option>70 to 120 calls per day</option>
+              <option>120 or more calls per day</option>
+            </select>
+          </div>
+          <button class="form-submit" onclick="submitForm()"><span id="submit-label">Send me the AI recording</span></button>
+          <div class="form-privacy">No commitment required. Your information is used only to respond to your request.</div>
+        </div>
+        <div class="form-success" id="form-success">
+          <div class="form-success-icon">✅</div>
+          <div class="form-success-title">Request received.</div>
+          <div class="form-success-sub">We will be in touch within one business day. Check your inbox for confirmation and a preview of the platform.</div>
+          <div style="text-align:left;margin-top:14px">
+            <div class="expect-item"><span class="expect-check">✓</span>Confirmation sent to your email</div>
+            <div class="expect-item"><span class="expect-check">✓</span>AI agent recording included</div>
+            <div class="expect-item"><span class="expect-check">✓</span>No commitment required</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="powered-bar">
+  <span class="powered-text">Powered by</span>
+  <a href="https://aifusioniqlabs.com" target="_blank" class="powered-brand">
+    <div class="powered-logo">AI</div>
+    <span class="powered-name"><span>AI FusionIQ</span> Labs</span>
+  </a>
+  <span class="powered-text" style="margin-left:8px">Operational AI built for real business</span>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand"><div class="footer-logo">PO</div><span class="footer-brand-name">PulseOps</span></div>
+        <div class="footer-brand-desc">AI-powered front office for healthcare practices. Every call answered. Every message routed. One system entry.</div>
+        <div style="margin-top:14px;font-size:12px;color:var(--g3)">A platform by <a href="https://aifusioniqlabs.com" target="_blank" style="color:var(--gold);text-decoration:none">AI FusionIQ Labs</a></div>
+      </div>
+      <div>
+        <div class="footer-links-title">Platform</div>
+        <a href="#how" class="footer-link">How It Works</a>
+        <a href="#features" class="footer-link">Features</a>
+        <a href="#tiers" class="footer-link">Plans</a>
+        <a href="#privacy" class="footer-link">Privacy and Compliance</a>
+      </div>
+      <div>
+        <div class="footer-links-title">Company</div>
+        <a href="https://aifusioniqlabs.com" target="_blank" class="footer-link">AI FusionIQ Labs</a>
+        <a href="https://linkedin.com/in/bennysingh" target="_blank" class="footer-link">LinkedIn</a>
+        <a href="mailto:hello@aifusioniqlabs.com" class="footer-link">hello@aifusioniqlabs.com</a>
+        <a href="tel:+18329374786" class="footer-link">+1 (832) 937-4786</a>
+      </div>
+      <div>
+        <div class="footer-links-title">Get Started</div>
+        <a href="#demo" class="footer-link">Watch the AI Agent</a>
+        <a href="#demo" class="footer-link">Book a Discovery Call</a>
+        <a href="#tiers" class="footer-link">View Plans</a>
+        <a href="#privacy" class="footer-link">HIPAA and BAA Details</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 PulseOps · AI FusionIQ Labs. All rights reserved.</div>
+      <div class="footer-powered">Built in Houston, TX · <a href="https://aifusioniqlabs.com" target="_blank">aifusioniqlabs.com</a> · <a href="mailto:hello@aifusioniqlabs.com">Privacy Policy</a></div>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toast-msg"></span></div>
+
+<script>
+const howTitles=['AI Answers','Call Categorized','Referral Flag','Staff Notified','System Handoff'];
+function setHowStep(n){
+  document.querySelectorAll('.how-step').forEach((s,i)=>s.classList.toggle('active',i===n));
+  document.querySelectorAll('.screen-panel').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.getElementById('how-screen-title').textContent=howTitles[n];
+}
+let howTimer=setInterval(()=>{
+  const steps=document.querySelectorAll('.how-step');
+  const active=document.querySelector('.how-step.active');
+  const idx=Array.from(steps).indexOf(active);
+  setHowStep((idx+1)%steps.length);
+},4000);
+document.querySelectorAll('.how-step').forEach(s=>s.addEventListener('click',()=>clearInterval(howTimer)));
+function setRole(id){
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.role-panel').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('role-'+id).classList.add('active');
+}
+function setFormTab(el,type){
+  document.querySelectorAll('.form-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('submit-label').textContent=type==='call'?'Reserve my discovery call':'Send me the AI recording';
+}
+function scrollToDemo(){document.getElementById('demo').scrollIntoView({behavior:'smooth'})}
+let toastTimer;
+function showToast(msg){
+  clearTimeout(toastTimer);
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+function submitForm(){
+  const name=document.getElementById('f-name').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const practice=document.getElementById('f-practice').value.trim();
+  if(!name||!email||!practice){showToast('Please fill in your name, email, and practice name.');return}
+  if(!email.includes('@')){showToast('Please enter a valid email address.');return}
+  document.getElementById('form-main').style.display='none';
+  document.getElementById('form-success').style.display='block';
+  showToast('Request received. We will be in touch within one business day.');
+}
+</script>
+</body>
+</html>
